@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.0
+    ports:
+      - 3307:3306
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin@888
+      MYSQL_DATABASE: basketball
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin@888
+      MYSQL_ROOT_HOST: "%" # 允许所有主机连接
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6381:6379
