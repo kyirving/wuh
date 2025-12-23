@@ -17,10 +17,14 @@ func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
 	// 初始化仓储
 	userRepository := repository.NewUserRepository(db)
 	leagueRepository := repository.NewLeagueRepo(db)
+	teamRepository := repository.NewTeamRepository(db)
+	playerRepository := repository.NewPlayerRepository(db)
 
 	// 初始化服务
 	userService := service.NewUserService(userRepository, config)
 	leagueService := service.NewLeagueService(leagueRepository)
+	teamService := service.NewTeamService(teamRepository, leagueRepository)
+	playerService := service.NewPlayerService(playerRepository)
 
 	// 初始化控制器
 	userController := controller.NewUserController(userService)
@@ -35,11 +39,21 @@ func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
 	r.Use(middleware.JWT(config))
 	// 初始化控制器
 	leagueController := controller.NewLeagueController(leagueService)
+	playerController := controller.NewPlayerController(playerService)
+	teamController := controller.NewTeamController(teamService)
 
 	leagueGroup := r.Group("/league")
 	{
 		leagueGroup.POST("/submit", leagueController.Submit)
 		leagueGroup.GET("/list", leagueController.GetLeagues)
+	}
+	teamGroup := r.Group("/team")
+	{
+		teamGroup.POST("/submit", teamController.Submit)
+	}
+	playerGroup := r.Group("/player")
+	{
+		playerGroup.POST("/submit", playerController.Submit)
 	}
 	return r
 }

@@ -73,4 +73,36 @@
       | `id` | string | 用户ID |
 
 ## 联赛模块
+### 创建联赛接口
+   - 接口路径：`/league/submit`
+   - 请求方法：`POST`
+   - 私有参数：
+      | 参数名 | 类型 | 是否必填 | 描述 |
+      | ------ | ---- | -------- | ---- |
+      | `name` | string | 是 | 联赛名称 |
+      | `description` | string | 是 | 联赛描述 |
 
+## 球队模块
+### 创建球队接口
+   - 接口路径：`/team/submit`
+   - 请求方法：`POST`
+   - 私有参数：
+      | 参数名 | 类型 | 是否必填 | 描述 |
+      | ------ | ---- | -------- | ---- |
+      | `name` | string | 是 | 球队名称 |
+      | `description` | string | 是 | 球队描述 |
+
+## 球员模块
+### 创建球员接口
+   - 接口路径：`/player/submit`
+   - 请求方法：`POST`
+   - 私有参数：
+      | 参数名 | 类型 | 是否必填 | 描述 |
+      | ------ | ---- | -------- | ---- |
+      | `name` | string | 是 | 球员名称 |
+      | `description` | string | 否 | 球员描述 |
+      | `team_id` | int | 否 | 球队ID |
+      | `position` | string | 否 | 球员位置 |
+      | `number` | int | 否 | 球员号码 |
+      | `height` | float | 否 | 球员身高 |
+      | `weight` | float | 否 | 球员体重 |
