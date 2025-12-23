@@ -40,14 +40,14 @@ func (j *JWTProvider) GenerateToken(userId int64, roles []string) (*JWTToken, er
 		"iss":   j.issuer,
 		"roles": roles,
 		"iat":   time.Now().Unix(),
-		"exp":   time.Now().Add(j.expire).Unix(),
+		"exp":   time.Now().Add(j.expire * time.Second).Unix(),
 	}
 
 	refreshClaims := jwt.MapClaims{
 		"sub": userId,
 		"iss": j.issuer,
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(j.refreshExpire).Unix(),
+		"exp": time.Now().Add(j.refreshExpire * time.Second).Unix(),
 	}
 
 	Token1 := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -74,7 +74,7 @@ func (j *JWTProvider) GenerateToken(userId int64, roles []string) (*JWTToken, er
 func (j *JWTProvider) ParseToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return j.secret, nil
-	}, jwt.WithIssuer(j.issuer))
+	})
 	if err != nil {
 		return nil, err
 	}

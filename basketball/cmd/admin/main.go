@@ -40,6 +40,8 @@ func main() {
 	}
 
 	r := router.InitRouter(db, config)
+	// r.Use(middleware.JWT()) //
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Manager.Port),
 		Handler: r.Handler(),
