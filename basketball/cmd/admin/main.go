@@ -1,21 +1,21 @@
 package main
 
 import (
-    "basketball/component/db"
-    "basketball/conf"
-    "basketball/dao"
-    adminModel "basketball/modules/admin/model"
-    "basketball/modules/admin/route"
-    "context"
-    "fmt"
-    "log"
-    "net/http"
-    "os"
-    "os/signal"
-    "syscall"
-    "time"
-    
-    "github.com/spf13/pflag"
+	"basketball/internal/component/db"
+	"basketball/internal/conf"
+	"basketball/internal/dao"
+	"basketball/internal/model"
+	"basketball/router"
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/spf13/pflag"
 )
 
 // main 管理端入口：加载配置、初始化数据库、自动迁移模型并启动HTTP服务
@@ -27,14 +27,19 @@ func main() {
 
 	config := conf.InitConfig(CommandArgs)
 
-    db := db.GetDb(&config.Db)
-    // 自动迁移 Admin 模型表结构
-    if err := db.AutoMigrate(&adminModel.Admin{}); err != nil {
-        log.Fatalf("auto migrate failed: %v", err)
-    }
+	db := db.GetDb(&config.Db)
+	// 自动迁移 Admin 模型表结构
 
-    fmt.Println("db:", db)
-    r := route.InitRouter(db)
+	if config.Manager.Env == "devlopment" {
+		// 开发环境 打印SQL语句
+		db = db.Debug()
+
+		if err := db.AutoMigrate(&model.User{}); err != nil {
+			log.Fatalf("auto migrate failed: %v", err)
+		}
+	}
+
+	r := router.InitRouter(db, config)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Manager.Port),
 		Handler: r.Handler(),
