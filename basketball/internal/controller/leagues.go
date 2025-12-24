@@ -37,8 +37,12 @@ func (obj *LeagueController) Submit(c *gin.Context) {
 	util.Output(c, http.StatusOK, nil, "success")
 }
 
-func (obj *LeagueController) GetLeagues(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "success",
-	})
+func (obj *LeagueController) List(c *gin.Context) {
+	leagues, err := obj.leagueService.List(c)
+	if err != nil {
+		util.Output(c, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
+
+	util.Output(c, http.StatusOK, leagues, "success")
 }

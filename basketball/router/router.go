@@ -7,12 +7,21 @@ import (
 	"basketball/internal/repository"
 	"basketball/internal/service"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
 	r := gin.Default()
+
+	conf := cors.DefaultConfig()
+	conf.AllowOrigins = []string{"http://localhost:9527", "http://127.0.0.1:9527"} // 允许的源
+	conf.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	conf.AllowHeaders = []string{"Origin", "Content-Type", "Authorization"}
+	conf.AllowCredentials = true
+	conf.MaxAge = 12 * 60 * 60 // 缓存时间
+	r.Use(cors.New(conf))
 
 	// 初始化仓储
 	userRepository := repository.NewUserRepository(db)
@@ -45,7 +54,7 @@ func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
 	leagueGroup := r.Group("/league")
 	{
 		leagueGroup.POST("/submit", leagueController.Submit)
-		leagueGroup.GET("/list", leagueController.GetLeagues)
+		leagueGroup.POST("/list", leagueController.List)
 	}
 	teamGroup := r.Group("/team")
 	{

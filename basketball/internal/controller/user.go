@@ -72,7 +72,7 @@ func (u *UserController) Login(ctx *gin.Context) {
 
 	token, err := u.Service.Login(ctx, req.Username, req.Password)
 	if err != nil {
-		util.Output(ctx, http.StatusInternalServerError, nil, err.Error())
+		util.Output(ctx, http.StatusUnauthorized, nil, err.Error())
 		return
 	}
 

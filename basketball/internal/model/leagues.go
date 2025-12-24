@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type League struct {
 	Name        string `json:"name" gorm:"column:name"`
 	Description string `json:"description" gorm:"column:description"`
@@ -17,4 +19,10 @@ func NewLeague(name, description string) *League {
 		Description: description,
 		Status:      1,
 	}
+}
+
+func (obj *League) AfterFind() error {
+	// 转换为本地时间
+	obj.CreatedAt = obj.CreatedAt.In(time.Local)
+	return nil
 }

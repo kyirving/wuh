@@ -26,3 +26,7 @@ func (obj *LeagueService) Submit(ctx context.Context, league *model.League) erro
 	}
 	return obj.Repo.Submit(ctx, league)
 }
+
+func (obj *LeagueService) List(ctx context.Context) ([]*model.League, error) {
+	return obj.Repo.List(ctx)
+}

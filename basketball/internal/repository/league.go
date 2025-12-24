@@ -15,6 +15,7 @@ type LeagueRepoInterface interface {
 	Submit(ctx context.Context, league *model.League) error
 	Exist(ctx context.Context, name string) (bool, error)
 	FindByID(ctx context.Context, id uint) (*model.League, error)
+	List(ctx context.Context) ([]*model.League, error)
 }
 
 func NewLeagueRepo(db *gorm.DB) *LeagueRepo {
@@ -41,4 +42,13 @@ func (obj *LeagueRepo) FindByID(ctx context.Context, id uint) (*model.League, er
 		return nil, err
 	}
 	return &league, nil
+}
+
+func (obj *LeagueRepo) List(ctx context.Context) ([]*model.League, error) {
+	var leagues []*model.League
+	err := obj.Db.WithContext(ctx).Find(&leagues).Error
+	if err != nil {
+		return nil, err
+	}
+	return leagues, nil
 }
