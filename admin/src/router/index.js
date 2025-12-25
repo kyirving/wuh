@@ -393,10 +393,8 @@ export const asyncRoutes = [
   {
     path: '/league',
     component: Layout,
-    redirect: '/league/index',
-    name: '联赛管理',
+    redirect: '/league',
     meta: {
-      title: '联赛管理',
       icon: 'list'
     },
     // 子路由大于1时 才会展开
@@ -404,8 +402,25 @@ export const asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/league/index'),
-        name: '联赛列表',
-        meta: { title: '联赛列表' }
+        name: '联赛管理',
+        meta: { title: '联赛管理' }
+      }
+    ]
+  },
+  {
+    path: '/team',
+    component: Layout,
+    redirect: '/team',
+    meta: {
+      icon: 'list'
+    },
+    // 子路由大于1时 才会展开
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/team/index'),
+        name: '球队管理',
+        meta: { title: '球队管理' }
       }
     ]
   },
