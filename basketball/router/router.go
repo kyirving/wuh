@@ -9,10 +9,11 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
+func InitRouter(db *gorm.DB, config *conf.Config, log *zap.Logger) *gin.Engine {
 	r := gin.Default()
 
 	conf := cors.DefaultConfig()
@@ -28,12 +29,14 @@ func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
 	leagueRepository := repository.NewLeagueRepo(db)
 	teamRepository := repository.NewTeamRepository(db)
 	playerRepository := repository.NewPlayerRepository(db)
+	gameRepository := repository.NewGameRepository(db)
 
 	// 初始化服务
 	userService := service.NewUserService(userRepository, config)
 	leagueService := service.NewLeagueService(leagueRepository)
 	teamService := service.NewTeamService(teamRepository, leagueRepository)
 	playerService := service.NewPlayerService(playerRepository)
+	gameService := service.NewGameService(gameRepository)
 
 	// 初始化控制器
 	userController := controller.NewUserController(userService)
@@ -48,8 +51,9 @@ func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
 	r.Use(middleware.JWT(config))
 	// 初始化控制器
 	leagueController := controller.NewLeagueController(leagueService)
-	playerController := controller.NewPlayerController(playerService)
+	playerController := controller.NewPlayerController(playerService, log)
 	teamController := controller.NewTeamController(teamService)
+	gameController := controller.NewGameController(gameService, log)
 
 	leagueGroup := r.Group("/league")
 	{
@@ -59,10 +63,18 @@ func InitRouter(db *gorm.DB, config *conf.Config) *gin.Engine {
 	teamGroup := r.Group("/team")
 	{
 		teamGroup.POST("/submit", teamController.Submit)
+		teamGroup.POST("/list", teamController.List)
 	}
 	playerGroup := r.Group("/player")
 	{
 		playerGroup.POST("/submit", playerController.Submit)
+		playerGroup.POST("/list", playerController.List)
+	}
+
+	gameGroup := r.Group("/game")
+	{
+		gameGroup.POST("/submit", gameController.Submit)
+		gameGroup.POST("/list", gameController.List)
 	}
 	return r
 }

@@ -8,5 +8,6 @@ type Player struct {
 	Position    string `json:"position" gorm:"column:position"`
 	Height      uint   `json:"height" gorm:"column:height"`
 	Weight      uint   `json:"weight" gorm:"column:weight"`
+	Team        Team   `json:"team" gorm:"foreignKey:TeamID;references:ID"`
 	BaseModel
 }

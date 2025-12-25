@@ -8,7 +8,6 @@ import (
 	"basketball/pkg/util"
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/spf13/cast"
@@ -37,9 +36,6 @@ func (u *UserService) Login(ctx context.Context, username, password string) (*au
 	if !exists {
 		return nil, errors.New("用户不存在")
 	}
-
-	fmt.Println(user.Password)
-	fmt.Println(util.EncryptPassword(password))
 
 	if user.Password != util.EncryptPassword(password) {
 		return nil, errors.New("password not match")

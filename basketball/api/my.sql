@@ -50,16 +50,17 @@ CREATE TABLE `players` (
 
 CREATE TABLE `games` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT "比赛ID",
-  `date` date DEFAULT NULL COMMENT "比赛日期",
+  `name` varchar(191) DEFAULT NULL COMMENT "比赛名称",
+  `description` text COMMENT "比赛描述",
+  `datetime` datetime DEFAULT NULL COMMENT "比赛时间",
   `league_id` SMALLINT UNSIGNED DEFAULT NULL COMMENT "联赛ID",
   `home_team_id` SMALLINT UNSIGNED DEFAULT NULL COMMENT "主队ID",
   `away_team_id` SMALLINT UNSIGNED DEFAULT NULL COMMENT "客队ID",
-  `description` text COMMENT "比赛描述",
   `status` bigint DEFAULT '1' COMMENT "状态 1:正常 2:禁用",
   `created_at` datetime(3) DEFAULT NULL COMMENT "创建时间",
   `updated_at` datetime(3) DEFAULT NULL COMMENT "更新时间",
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB Comment="游戏表";
+) ENGINE=InnoDB Comment="比赛表";
 
 CREATE TABLE `game_stats` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT "比赛事件ID",

@@ -66,6 +66,23 @@ service.interceptors.response.use(
           })
         })
       }
+
+      if (res.code === 401) {
+        Message({
+          message: '登录过期，请重新登录',
+          type: 'error',
+          duration: 5 * 1000
+        })
+
+        // 重定向登陆页面
+        // 删除token
+        store.dispatch('user/resetToken').then(() => {
+          // 重定向登陆页面
+          location.href = '/login'
+        })
+
+        // location.href = '/login'
+      }
       return Promise.reject(new Error(res.msg || 'Error'))
     } else {
       return res

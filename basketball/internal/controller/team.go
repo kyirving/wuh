@@ -20,6 +20,7 @@ func NewTeamController(teamService *service.TeamService) *TeamController {
 	}
 }
 
+// Submit 创建球队
 func (tc *TeamController) Submit(ctx *gin.Context) {
 	var reqBody admin.TeamDao
 	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
@@ -38,6 +39,7 @@ func (tc *TeamController) Submit(ctx *gin.Context) {
 	}
 
 	team := &model.Team{
+		ID:          reqBody.Id,
 		Name:        reqBody.Name,
 		Description: reqBody.Description,
 		LeagueID:    reqBody.LeagueID,
@@ -48,4 +50,14 @@ func (tc *TeamController) Submit(ctx *gin.Context) {
 		return
 	}
 	util.Output(ctx, http.StatusOK, gin.H{"id": team.ID}, "team submitted")
+}
+
+// List 获取球队列表，返回球队基础信息及所属联赛名称
+func (tc *TeamController) List(ctx *gin.Context) {
+	list, err := tc.TeamService.List(ctx)
+	if err != nil {
+		util.Output(ctx, http.StatusInternalServerError, nil, "failed to list teams")
+		return
+	}
+	util.Output(ctx, http.StatusOK, list, "teams listed")
 }

@@ -2,13 +2,13 @@ package main
 
 import (
 	"basketball/internal/component/db"
+	myLog "basketball/internal/component/log"
 	"basketball/internal/conf"
 	"basketball/internal/dao"
 	"basketball/internal/model"
 	"basketball/router"
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/spf13/pflag"
+	"go.uber.org/zap"
 )
 
 // main 管理端入口：加载配置、初始化数据库、自动迁移模型并启动HTTP服务
@@ -27,6 +28,14 @@ func main() {
 
 	config := conf.InitConfig(CommandArgs)
 
+	// 初始化日志
+	log, err := myLog.InitLogger(config)
+	defer log.Sync()
+	if err != nil {
+		log.Error("init logger failed", zap.Error(err))
+		return
+	}
+
 	db := db.GetDb(&config.Db)
 	// 自动迁移 Admin 模型表结构
 
@@ -35,11 +44,12 @@ func main() {
 		db = db.Debug()
 
 		if err := db.AutoMigrate(&model.User{}); err != nil {
-			log.Fatalf("auto migrate failed: %v", err)
+			log.Error("auto migrate user model failed", zap.Error(err))
+			return
 		}
 	}
 
-	r := router.InitRouter(db, config)
+	r := router.InitRouter(db, config, log)
 	// r.Use(middleware.JWT()) //
 
 	srv := &http.Server{
@@ -50,7 +60,8 @@ func main() {
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			log.Error("listen: %s\n", zap.Error(err))
+			return
 		}
 
 		fmt.Println("Server is running on port 8081")
@@ -59,12 +70,12 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutdown Server ...")
+	log.Info("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Println("Server Shutdown:", err)
+		log.Error("Server Shutdown:", zap.Error(err))
 	}
-	log.Println("Server exiting")
+	log.Info("Server exiting")
 }

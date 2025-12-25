@@ -61,16 +61,6 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/404',
-    component: () => import('@/views/error-page/404'),
-    hidden: true
-  },
-  {
-    path: '/401',
-    component: () => import('@/views/error-page/401'),
-    hidden: true
-  },
-  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -421,6 +411,40 @@ export const asyncRoutes = [
         component: () => import('@/views/team/index'),
         name: '球队管理',
         meta: { title: '球队管理' }
+      }
+    ]
+  },
+  {
+    path: '/player',
+    component: Layout,
+    redirect: '/player',
+    meta: {
+      icon: 'list'
+    },
+    // 子路由大于1时 才会展开
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/player/index'),
+        name: '球员管理',
+        meta: { title: '球员管理' }
+      }
+    ]
+  },
+  {
+    path: '/game',
+    component: Layout,
+    redirect: '/game',
+    meta: {
+      icon: 'list'
+    },
+    // 子路由大于1时 才会展开
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/game/index'),
+        name: '比赛管理',
+        meta: { title: '比赛管理' }
       }
     ]
   },
